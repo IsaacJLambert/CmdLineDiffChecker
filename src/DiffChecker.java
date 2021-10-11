@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.LinkedList;
 
 /**
@@ -9,18 +10,31 @@ import java.util.LinkedList;
 public class DiffChecker {
     public static void main(String[] args) {
         CmdLineReader reader = new CmdLineReader();
+        File oText = new File(args[0]);
+        File changedText = new File(args[1]);
 
         //get Original Text
-        LinkedList<Character> originalText = new LinkedList<>(reader.getCMDText());
+        LinkedList<Character> originalText = null;
+        try {
+            originalText = new LinkedList<>(reader.getCMDText(oText, "original"));
+        } catch (Exception e) {
+            System.out.println("Error reading original file");
+            e.printStackTrace();
+        }
 
         //get Changed/New Text
-        LinkedList<Character> newText = new LinkedList<>(reader.getCMDText());
+        LinkedList<Character> newText = null;
+        try {
+            newText = new LinkedList<>(reader.getCMDText(changedText, "changed"));
+        } catch (Exception e) {
+            System.out.println("Error reading changed file");
+            e.printStackTrace();
+        }
 
         //get diff
-        StringBuilder combinedText = new StringBuilder(checkDiff(originalText, newText));
 
         System.out.println("Diff:");
-        System.out.println(combinedText.toString());
+        System.out.println(checkDiff(originalText, newText));
     }
 
     /**
