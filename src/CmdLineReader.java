@@ -4,19 +4,20 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 public class CmdLineReader {
-    public LinkedList<Character> getCMDText(File inputFile, String originalOrChanged) throws Exception {
-        LinkedList<Character> toReturn = new LinkedList<>();
+    public LinkedList<String> getCMDText(File inputFile, String originalOrChanged) throws Exception {
+        LinkedList<String> toReturn = new LinkedList<>();
         try {
             Scanner sc = new Scanner(inputFile);
             StringBuilder text = new StringBuilder();
-            while (sc.hasNextLine()) {
-                String nextLine = sc.nextLine();
-                text.append(nextLine);
-                for(int i = 0; i < nextLine.length(); i++) {
-                    toReturn.add(nextLine.charAt(i));
-                }
+            while (sc.hasNext()) {
+                //add to printed text
+                String nextWord = sc.next();
+                text.append(nextWord);
                 text.append(" ");
-                toReturn.add(' ');
+
+                //add to linked list
+                toReturn.add(nextWord);
+                toReturn.add(" ");
             }
             System.out.println("Input " + originalOrChanged + " Text:" + text);
             return toReturn;
