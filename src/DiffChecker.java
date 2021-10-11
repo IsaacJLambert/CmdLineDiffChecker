@@ -14,7 +14,7 @@ public class DiffChecker {
         File changedText = new File(args[1]);
 
         //get Original Text
-        LinkedList<Character> originalText = null;
+        LinkedList<String> originalText = null;
         try {
             originalText = new LinkedList<>(reader.getCMDText(oText, "original"));
         } catch (Exception e) {
@@ -23,7 +23,7 @@ public class DiffChecker {
         }
 
         //get Changed/New Text
-        LinkedList<Character> newText = null;
+        LinkedList<String> newText = null;
         try {
             newText = new LinkedList<>(reader.getCMDText(changedText, "changed"));
         } catch (Exception e) {
@@ -31,10 +31,15 @@ public class DiffChecker {
             e.printStackTrace();
         }
 
-        //get diff
 
+        //get diff
         System.out.println("Diff:");
-        System.out.println(checkDiff(originalText, newText));
+        if ((newText != null) && (originalText != null)) {
+            System.out.println(checkDiff(originalText, newText));
+        }
+        else {
+            System.out.println("Error in files");
+        }
     }
 
     /**
@@ -43,16 +48,39 @@ public class DiffChecker {
      * @param newText -> changed text
      * @return -> combined text showing the changes made
      */
-    public static StringBuilder checkDiff(LinkedList<Character> originalText, LinkedList<Character> newText) {
+    public static StringBuilder checkDiff(LinkedList<String> originalText, LinkedList<String> newText) {
         StringBuilder textToReturn = new StringBuilder();
-        int iterator = 0;
-        for (Character nextChar : originalText) {
-            iterator++;
+        do {
+            if ((!newText.isEmpty()) && (originalText.peekFirst().equals(newText.peekFirst()))) {
+                textToReturn.append(originalText.pollFirst());
+                newText.pollFirst();
+            }
+            else {
+                //see if the word was deleted
+                if(!newText.contains(originalText.peekFirst())) {
+                    textToReturn.append("[");
+                    textToReturn.append(originalText.pollFirst());
+                    textToReturn.append("]");
+                }
+                else {
+                    textToReturn.append(originalText.pollFirst());
+                }
 
+                if (!newText.isEmpty()) {
+                    textToReturn.append("(");
+                    textToReturn.append(newText.pollFirst());
+                    textToReturn.append(")");
+                }
+            }
+        } while(!originalText.isEmpty());
+
+        if(!newText.isEmpty()) {
+            while (!newText.isEmpty()) {
+                textToReturn.append("(");
+                textToReturn.append(newText.pollFirst());
+                textToReturn.append(")");
+            }
         }
-
         return textToReturn;
     }
-
-
 }
